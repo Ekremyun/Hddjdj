@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Налоговый компас: сравнение России и стран мира</title>
-    <!-- Google Fonts и Font Awesome для иконок -->
+    <title>Сравнительный анализ налогов: Россия и страны мира</title>
+    <!-- Подключение шрифтов и базовой стилизации -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 (free icons) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Chart.js CDN для гистограмм -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -19,429 +18,527 @@
         body {
             font-family: 'Inter', sans-serif;
             background: #f4f7fc;
-            color: #1a2c3e;
+            color: #1e2a3e;
             line-height: 1.5;
-            scroll-behavior: smooth;
+            padding: 2rem 1.5rem;
         }
 
         .container {
-            max-width: 1300px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 1.5rem 1.8rem;
         }
 
-        /* Header */
+        /* Заголовок и описание */
         .hero {
-            background: linear-gradient(135deg, #0b2b3b 0%, #1c4e6f 100%);
-            color: white;
-            border-radius: 2rem;
-            padding: 2rem 2rem;
+            text-align: center;
             margin-bottom: 2.5rem;
-            box-shadow: 0 12px 25px rgba(0,0,0,0.1);
         }
+
         .hero h1 {
             font-size: 2.2rem;
             font-weight: 700;
+            background: linear-gradient(135deg, #1A4D8C, #2C7DA0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
             letter-spacing: -0.3px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
         }
-        .hero h1 i {
-            background: #f5b042;
-            padding: 12px;
-            border-radius: 50%;
-            color: #1e2f3a;
-            font-size: 1.5rem;
-        }
+
         .hero p {
-            margin-top: 0.8rem;
-            font-size: 1.1rem;
-            opacity: 0.9;
-            max-width: 85%;
+            font-size: 1rem;
+            color: #2c3e4e;
+            max-width: 750px;
+            margin: 0 auto;
+            font-weight: 400;
         }
+
         .badge-date {
             display: inline-block;
-            margin-top: 1rem;
-            background: rgba(255,255,255,0.2);
-            padding: 6px 14px;
+            background: #e9ecef;
+            padding: 0.2rem 0.8rem;
             border-radius: 40px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 0.8rem;
+            color: #1e4663;
+        }
+
+        /* Управление: фильтр страны + кнопки */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 28px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f1f5f9;
+            padding: 0.5rem 1rem;
+            border-radius: 48px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-box i {
+            color: #5f7f9e;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            font-size: 0.9rem;
+            width: 100%;
+            outline: none;
             font-weight: 500;
         }
 
-        /* карточки с основными показателями */
-        .stats-grid {
+        .view-options {
             display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            margin-bottom: 2.8rem;
-            justify-content: space-between;
-        }
-        .stat-card {
-            background: white;
-            flex: 1;
-            min-width: 190px;
-            border-radius: 1.5rem;
-            padding: 1.3rem 1rem;
-            box-shadow: 0 5px 12px rgba(0,0,0,0.05);
-            transition: transform 0.2s ease;
-            border: 1px solid #e2edf2;
-            text-align: center;
-        }
-        .stat-card:hover {
-            transform: translateY(-4px);
-        }
-        .stat-card i {
-            font-size: 2.2rem;
-            color: #2c7da0;
-        }
-        .stat-card h3 {
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 12px 0 5px;
-            color: #4a627a;
-        }
-        .stat-value {
-            font-size: 1.9rem;
-            font-weight: 800;
-            color: #1f5068;
-        }
-        .stat-note {
-            font-size: 0.7rem;
-            color: #6c8fae;
+            gap: 0.6rem;
         }
 
-        /* секции таблиц и графиков */
-        .section-title {
-            font-size: 1.7rem;
-            font-weight: 600;
-            margin: 2rem 0 1rem 0;
-            border-left: 6px solid #f5b042;
-            padding-left: 1rem;
+        .btn-icon {
+            background: #f1f5f9;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #2c3e4e;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-        .comparison-table {
-            background: white;
-            border-radius: 1.5rem;
+
+        .btn-icon.active {
+            background: #1A4D8C;
+            color: white;
+            box-shadow: 0 2px 6px rgba(26, 77, 140, 0.2);
+        }
+
+        .btn-icon i {
+            font-size: 0.85rem;
+        }
+
+        /* Таблица (основной вид) */
+        .table-wrapper {
             overflow-x: auto;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.03);
-            border: 1px solid #e0ecf2;
-            margin-bottom: 2.5rem;
+            border-radius: 24px;
+            background: white;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
         }
-        table {
+
+        .comparison-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.9rem;
-            min-width: 640px;
+            min-width: 780px;
         }
-        th {
-            background: #eef3f8;
+
+        .comparison-table th {
+            background: #f8fafc;
             padding: 1rem 0.8rem;
+            text-align: left;
             font-weight: 600;
-            color: #1f3b48;
-            text-align: center;
-            border-bottom: 2px solid #cbdde6;
+            color: #0f2b3d;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.85rem;
+            letter-spacing: 0.3px;
         }
-        td {
+
+        .comparison-table td {
             padding: 1rem 0.8rem;
-            text-align: center;
-            border-bottom: 1px solid #e6edf2;
-            font-weight: 500;
-            background-color: white;
+            border-bottom: 1px solid #edf2f7;
+            vertical-align: top;
         }
-        tr:last-child td {
-            border-bottom: none;
+
+        .comparison-table tr:hover td {
+            background-color: #fafcff;
         }
+
+        .country-name {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
         .country-flag {
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .highlight {
-            background-color: #fff2e0;
-            font-weight: 700;
-            color: #c95a0f;
-        }
-        .badge-low {
-            background: #dff0e6;
-            color: #1c6b3f;
-            border-radius: 30px;
-            padding: 3px 10px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        /* графики */
-        .chart-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2rem;
-            margin: 2rem 0 2rem;
-        }
-        .chart-box {
-            flex: 1;
-            min-width: 280px;
-            background: white;
-            border-radius: 1.5rem;
-            padding: 1.2rem;
-            box-shadow: 0 5px 12px rgba(0,0,0,0.05);
-            border: 1px solid #dde9f0;
-        }
-        .chart-box h3 {
-            font-weight: 600;
-            margin-bottom: 1rem;
             font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        canvas {
-            max-height: 280px;
-            width: 100%;
         }
 
-        /* доп. анализ */
-        .insight-card {
-            background: #e7f0f5;
-            border-radius: 1.2rem;
-            padding: 1.3rem 1.8rem;
-            margin: 2rem 0;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
+        .tax-badge {
+            display: inline-block;
+            background: #eef2ff;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #1e4a76;
         }
-        .insight-text {
-            font-size: 0.95rem;
-            font-weight: 500;
+
+        .tax-highlight {
+            background: #ffe8e0;
+            color: #c2410c;
+            font-weight: 700;
         }
-        .insight-text i {
-            color: #e67e22;
-            margin-right: 6px;
+
+        .tooltip-note {
+            border-bottom: 1px dashed #90a4bc;
+            cursor: help;
         }
-        .footer-note {
-            text-align: center;
-            margin-top: 3rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #cbdde6;
+
+        .footnote {
+            margin-top: 1.8rem;
+            background: #eef2fa;
+            padding: 1rem 1.5rem;
+            border-radius: 20px;
             font-size: 0.75rem;
-            color: #5c7c91;
+            color: #2c5a7a;
         }
 
-        @media (max-width: 750px) {
-            .container { padding: 1rem; }
-            .hero p { max-width: 100%; }
-            .hero h1 { font-size: 1.6rem; }
-            .stat-value { font-size: 1.4rem; }
+        /* карточный вид (grid) для мобильной альтернативы */
+        .cards-view {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.25rem;
+            margin-top: 1rem;
         }
-        button, a {
-            user-select: none;
+
+        .cards-view.active {
+            display: grid;
+        }
+
+        .tax-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1rem 1.2rem;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e9edf2;
+            transition: 0.1s linear;
+        }
+
+        .tax-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #eef2f8;
+            padding-bottom: 0.5rem;
+        }
+
+        .card-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.7rem;
+            font-size: 0.85rem;
+        }
+
+        .card-label {
+            font-weight: 500;
+            color: #4a627a;
+        }
+
+        .card-value {
+            font-weight: 600;
+            color: #1e2f3f;
+            text-align: right;
+        }
+
+        hr {
+            margin: 0.8rem 0;
+            border: none;
+            border-top: 1px solid #eef2f8;
+        }
+
+        @media (max-width: 680px) {
+            body {
+                padding: 1rem;
+            }
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            .btn-icon span {
+                display: none;
+            }
+            .btn-icon i {
+                margin: 0;
+            }
+            .btn-icon {
+                padding: 0.5rem 0.8rem;
+            }
         }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="hero">
-        <h1>
-            <i class="fas fa-chart-line"></i> 
-            Налоговый компас 2025
-        </h1>
-        <p>Сравнительный анализ налоговой нагрузки в России, США, Германии, ОАЭ и Сингапуре.<br> 
-        Данные по налогу на прибыль компаний, НДС/аналоги, НДФЛ и социальные взносы.</p>
-        <div class="badge-date"><i class="far fa-calendar-alt"></i> Актуально на 2025 год · Ставки для типового бизнеса и физических лиц</div>
+        <h1><i class="fas fa-chart-line" style="margin-right: 8px;"></i> Налоговый компас</h1>
+        <p>Сравнительный анализ ключевых налогов: Россия, США, Германия, ОАЭ, Сингапур, Канада, Великобритания и другие страны.</p>
+        <div class="badge-date"><i class="far fa-calendar-alt"></i> Актуальные ставки 2025 (основные режимы)</div>
     </div>
 
-    <!-- Быстрая статистика -->
-    <div class="stats-grid">
-        <div class="stat-card"><i class="fas fa-globe-europe"></i><h3>Россия (ОСН)</h3><div class="stat-value">20%</div><div class="stat-note">налог на прибыль</div></div>
-        <div class="stat-card"><i class="fas fa-flag-usa"></i><h3>США (федеральный)</h3><div class="stat-value">21%</div><div class="stat-note">корпоративный налог</div></div>
-        <div class="stat-card"><i class="fas fa-euro-sign"></i><h3>Германия*</h3><div class="stat-value">~29.9%</div><div class="stat-note">с учётом солидарного</div></div>
-        <div class="stat-card"><i class="fas fa-oil-can"></i><h3>ОАЭ</h3><div class="stat-value">9%</div><div class="stat-note">корпоративный (с 2023)</div></div>
-        <div class="stat-card"><i class="fas fa-dragon"></i><h3>Сингапур</h3><div class="stat-value">17%</div><div class="stat-note">эффективная ставка</div></div>
+    <div class="toolbar">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Фильтр по стране...">
+        </div>
+        <div class="view-options">
+            <button id="tableViewBtn" class="btn-icon active"><i class="fas fa-table"></i><span>Таблица</span></button>
+            <button id="cardsViewBtn" class="btn-icon"><i class="fas fa-id-card"></i><span>Карточки</span></button>
+        </div>
     </div>
 
-    <!-- Главная таблица сравнения -->
-    <div class="section-title"><i class="fas fa-table-list"></i> Ключевые налоги: Россия vs ведущие экономики</div>
-    <div class="comparison-table">
-        <table>
+    <!-- Таблица -->
+    <div id="tableView" class="table-wrapper">
+        <table class="comparison-table">
             <thead>
-                <tr><th>Страна</th><th>Налог на прибыль (CIT)</th><th>НДС / GST / VAT</th><th>НДФЛ (макс. ставка)</th><th>Соц. взносы (работодатель)</th></tr>
-            </thead>
-            <tbody>
-                <tr class="highlight"><td class="country-flag"><i class="fas fa-flag-checkered"></i> Россия</td><td><strong>20%</strong></td><td>20% (стандарт)</td><td>13% / 15% (свыше 5 млн ₽)</td><td>30% (в ПФР, ФСС, ФОМС)</td></tr>
-                <tr><td class="country-flag"><i class="fas fa-flag-usa"></i> США</td><td>21% (федеральный) + штаты ~0-12%</td><td>нет НДС, Sales tax ~6-10%</td><td>37% (федеральный)</td><td>7.65% (FICA, соц.страх+Medicare)</td></tr>
-                <tr><td class="country-flag"><i class="fas fa-flag-de"></i> Германия</td><td>15% (Körperschaftsteuer) + Gewerbesteuer ~14-17% → ~29.9% средняя</td><td>19% (MwSt.)</td><td>45% (при доходах > ~277k €)</td><td>~19.3% (пенс., мед., страх.)</td></tr>
-                <tr><td class="country-flag"><i class="fas fa-flag-ae"></i> ОАЭ</td><td>9% (с 2023, для прибыли > 375k AED)</td><td>5% (VAT)</td><td>0% (нет подоходного налога)</td><td>~12.5% (пенсионный взнос, для граждан/резидентов)</td></tr>
-                <tr><td class="country-flag"><i class="fas fa-flag-sg"></i> Сингапур</td><td>17% (но льготы → эффективная ~10-12%)</td><td>9% (GST, вырастет до 9% 2024+)</td><td>0% (нет подоходного налога?) — ошибочно: макс. 24% прогрессив</td><td>17% (CPF для граждан, для экспатов только CPF?)</td></tr>
-            </tbody>
+                <tr>
+                    <th>Страна</th>
+                    <th>Налог на прибыль (корпоративный)</th>
+                    <th>НДС / GST / налог с продаж</th>
+                    <th>НДФЛ (макс. ставка)</th>
+                    <th>Социальные взносы (работодатель)</th>
+                    <th>Особенности / Рейтинг нагрузки</th>
+                </tr>
+                </thead>
+                <tbody id="taxTableBody">
+                    <!-- данные из JS -->
+                </tbody>
         </table>
     </div>
-    <!-- дополнительная строка примечаний: уточнение по Сингапуру -->
-    <p style="font-size:0.75rem; margin-top:-1.2rem; margin-bottom:1rem;"><i class="fas fa-info-circle"></i> Примечание: Сингапур имеет прогрессивный НДФЛ до 24% (для резидентов), ставка CIT 17% с освобождениями. Социальные отчисления CPF для граждан до 37% (но работодатель ~17%). Для чистоты сравнения по НДФЛ указан максимум.</p>
 
-    <!-- Блок графиков: Гистограммы основных налогов -->
-    <div class="section-title"><i class="fas fa-chart-simple"></i> Наглядное сравнение: налог на прибыль и НДС</div>
-    <div class="chart-row">
-        <div class="chart-box">
-            <h3><i class="fas fa-building"></i> Корпоративный налог, %</h3>
-            <canvas id="citChart" width="400" height="250" style="max-width:100%; height:auto;"></canvas>
-        </div>
-        <div class="chart-box">
-            <h3><i class="fas fa-receipt"></i> НДС / GST / VAT, %</h3>
-            <canvas id="vatChart" width="400" height="250" style="max-width:100%; height:auto;"></canvas>
-        </div>
-    </div>
-    <div class="chart-row">
-        <div class="chart-box">
-            <h3><i class="fas fa-user"></i> Макс. ставка НДФЛ, %</h3>
-            <canvas id="pITChart" width="400" height="250" style="max-width:100%; height:auto;"></canvas>
-        </div>
-        <div class="chart-box">
-            <h3><i class="fas fa-hand-holding-heart"></i> Соцвзносы работодателя, %</h3>
-            <canvas id="socialChart" width="400" height="250" style="max-width:100%; height:auto;"></canvas>
-        </div>
-    </div>
+    <!-- Карточный вид -->
+    <div id="cardsView" class="cards-view"></div>
 
-    <!-- Аналитический блок: сравнительная налоговая нагрузка -->
-    <div class="insight-card">
-        <div class="insight-text"><i class="fas fa-gavel"></i> <strong>Ключевые выводы:</strong><br> Россия — средняя ставка налога на прибыль (20%) и высокая нагрузка по соцвзносам (30%). ОАЭ привлекательны низким CIT (9%) и отсутствием НДФЛ. Германия имеет наибольшую эффективную ставку на прибыль (~30%) и высокий НДФЛ. Сингапур сочетает умеренный CIT и низкие налоги для капитала. Для международного бизнеса важно учитывать не только номинальные ставки, но и налоговые льготы.</div>
-        <i class="fas fa-chart-pie" style="font-size:2rem; opacity:0.6;"></i>
-    </div>
-
-    <!-- Дополнительная таблица: Совокупная налоговая нагрузка (пример для компании + условного топ-менеджера) -->
-    <div class="section-title"><i class="fas fa-calculator"></i> Интегральный показатель: налоги компании + дивиденды</div>
-    <div class="comparison-table">
-        <table>
-            <thead><tr><th>Юрисдикция</th><th>Эффективная ставка налога на распределённую прибыль (CIT + налог у источника / налог на дивиденды для физлица)</th><th>Рейтинг налоговой конкурентоспособности</th></tr></thead>
-            <tbody>
-                <tr><td>🇷🇺 Россия</td><td>20% CIT + 13% НДФЛ с дивидендов = <strong>~30.4%</strong> эффективная нагрузка (без реинвестиций)</td><td>🟡 Средняя</td></tr>
-                <tr><td>🇺🇸 США</td><td>21% CIT + дивиденды до 23.8% (с учётом NIIT) → <strong>до ~40%</strong></td><td>🟠 Умеренно высокая</td></tr>
-                <tr><td>🇩🇪 Германия</td><td>CIT+GewSt ~30% + налог с дивидендов ~26.4% → <strong>~48% совокупная</strong></td><td>🔴 Высокая нагрузка</td></tr>
-                <tr><td>🇦🇪 ОАЭ</td><td>9% CIT + 0% налог на дивиденды = <strong>~9%</strong> (идеально)</td><td>🟢 Низкая, офшор friendly</td></tr>
-                <tr><td>🇸🇬 Сингапур</td><td>17% CIT, но при льготах 10% + 0% налог на дивиденды → <strong>до 17%</strong></td><td>🟢 Очень привлекательно</td></tr>
-            </tbody>
-        </table>
-    </div>
-    <p style="font-size:0.75rem; margin-top:-0.8rem;"><i class="fas fa-lightbulb"></i> Для иностранных инвесторов ОАЭ и Сингапур предлагают минимальные фискальные барьеры. Россия имеет стандартный для развитых стран уровень корпоративного налога.</p>
-
-    <!-- Блок динамики или дополнительный комментарий -->
-    <div class="footer-note">
-        <i class="far fa-chart-bar"></i> Источники: официальные данные национальных налоговых служб, PwC (Worldwide Tax Summaries 2024-2025), OECD Tax Database. <br>
-        Данные не являются индивидуальной консультацией. Для точного планирования обратитесь к специалисту.
+    <div class="footnote">
+        <i class="fas fa-info-circle"></i> Данные основаны на исследованиях налоговых систем (OECD, PwC, локальные источники). Социальные взносы и НДФЛ приведены для стандартных режимов. В ОАЭ корпоративный налог 9% для прибыли свыше 375k AED, для свободных зон 0%. В РФ сниженные страховые взносы для МСП — 15% с выплат сверх МРОТ. Цель — сравнительный анализ, проконсультируйтесь со специалистом.
     </div>
 </div>
 
 <script>
-    (function() {
-        // набор данных для построения графиков
-        const countries = ['Россия', 'США', 'Германия', 'ОАЭ', 'Сингапур'];
-        
-        // Налог на прибыль (эффективная базовая ставка для сравнения)
-        const citData = [20, 21, 29.9, 9, 17];   // Германия ~29.9%
-        // НДС / VAT
-        const vatData = [20, 7.5, 19, 5, 9];     // США — средняя ставка sales tax ~7.5% для наглядности
-        // НДФЛ максимальная ставка
-        const pitData = [15, 37, 45, 0, 24];     // в РФ повышенный 15% для дохода >5 млн, в остальных 13% но показываем верхнюю планку
-        // Соцвзносы работодатель (в % от фонда оплаты труда)
-        const socialData = [30, 7.65, 19.3, 12.5, 17];  // Сингапур CPF employer ~17% для граждан
-        
-        // функция создания графиков с помощью Chart.js
-        function createBarChart(ctx, label, dataValues, bgColor = '#2c7da0') {
-            return new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: countries,
-                    datasets: [{
-                        label: label,
-                        data: dataValues,
-                        backgroundColor: bgColor,
-                        borderRadius: 10,
-                        barPercentage: 0.65,
-                        categoryPercentage: 0.8,
-                        borderSkipped: false,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: { position: 'top', labels: { font: { size: 11, weight: 'bold' } } },
-                        tooltip: { callbacks: { label: (ctx) => `${ctx.raw}%` } }
-                    },
-                    scales: {
-                        y: { 
-                            beginAtZero: true, 
-                            title: { display: true, text: 'Проценты (%)', font: { weight: '500', size: 11 } },
-                            grid: { color: '#e2e8f0' }
-                        },
-                        x: { ticks: { font: { size: 11, weight: '500' } } }
-                    }
-                }
-            });
+    // База данных: страны с основными налоговыми показателями
+    const taxData = [
+        {
+            id: 1,
+            name: "Россия",
+            flag: "🇷🇺",
+            corporateTax: "20% (стандарт)",
+            vat: "20% (10% льготный)",
+            personalIncomeTax: "13% / 15% (свыше 5 млн ₽)",
+            socialEmployer: "30% (15% для МСП)",
+            note: "НДФЛ 13% базовая, повышенная 15% для доходов >5 млн ₽. Соцвзносы 30% (пенс., мед., соцстрах)."
+        },
+        {
+            id: 2,
+            name: "США",
+            flag: "🇺🇸",
+            corporateTax: "21% (федеральный)",
+            vat: "Нет (Sales Tax 0-10% штатный)",
+            personalIncomeTax: "37% (фед.) + штатный",
+            socialEmployer: "7.65% (FICA)",
+            note: "Корпоративный налог 21% федеральный, плюс налоги штатов. НДС отсутствует, налог с продаж местный."
+        },
+        {
+            id: 3,
+            name: "Германия",
+            flag: "🇩🇪",
+            corporateTax: "≈29.9% (15% корп. + солидарн. + торг.)",
+            vat: "19% (7% сниженный)",
+            personalIncomeTax: "45% (солидарный налог)",
+            socialEmployer: "≈19.3% (пенс., мед., страх.)",
+            note: "Эффективная ставка на прибыль ~29-33% в зависимости от муниципалитета. НДФЛ прогрессия до 45%."
+        },
+        {
+            id: 4,
+            name: "ОАЭ",
+            flag: "🇦🇪",
+            corporateTax: "9% (>375k AED), 0% для зон",
+            vat: "5% (стандартный)",
+            personalIncomeTax: "0%",
+            socialEmployer: "~12.5% (для граждан ОАЭ только)",
+            note: "Нет личного подоходного налога. Корпоративный с 2023 г. НДС 5%. Для экспатов соцвзносы не взимаются."
+        },
+        {
+            id: 5,
+            name: "Сингапур",
+            flag: "🇸🇬",
+            corporateTax: "17% (льготы до 4.25% для стартапов)",
+            vat: "9% (GST, повышен с 8% в 2024)",
+            personalIncomeTax: "22% (прогрессия до 24% с 2024)",
+            socialEmployer: "17% (CPF, для граждан/ПМЖ)",
+            note: "Корпоративный налог эффективно ниже за счёт льгот. CPF для местных, для экспатов без взносов."
+        },
+        {
+            id: 6,
+            name: "Великобритания",
+            flag: "🇬🇧",
+            corporateTax: "25% (прибыль >250k £, 19% для малых)",
+            vat: "20% (5% сниженный)",
+            personalIncomeTax: "45% (доп. ставка)",
+            socialEmployer: "13.8% (NIC)",
+            note: "Корпоративная ставка повышена с 2023 г. Налог на прибыль дифференцирован."
+        },
+        {
+            id: 7,
+            name: "Канада",
+            flag: "🇨🇦",
+            corporateTax: "26.5% (общая: фед.15%+провинц.)",
+            vat: "5% GST + провинц. (от 0 до 10%)",
+            personalIncomeTax: "33% (фед.) + провинц. до ~54%",
+            socialEmployer: "~11.5% (CPP/EI)",
+            note: "Совокупный корпоративный налог варьируется, эффективно ~26-31%. Налог с продаж комбинированный."
+        },
+        {
+            id: 8,
+            name: "Китай",
+            flag: "🇨🇳",
+            corporateTax: "25% (льготы 15% для high-tech)",
+            vat: "13% (основной, 6% для услуг)",
+            personalIncomeTax: "45% (прогрессия)",
+            socialEmployer: "~28% (город, пенс., мед.)",
+            note: "Социальные взносы высокие, местные вариации. Налог на добавленную стоимость стандартный."
+        },
+        {
+            id: 9,
+            name: "Индия",
+            flag: "🇮🇳",
+            corporateTax: "22% (без льгот), 15% для новых заводов",
+            vat: "GST 18% (5%,12%,28%)",
+            personalIncomeTax: "39% ( + cess)",
+            socialEmployer: "~12% (EPF + иные)",
+            note: "Корпоративный налог снижен для стимулирования. GST заменил многие косвенные налоги."
+        },
+        {
+            id: 10,
+            name: "Швеция",
+            flag: "🇸🇪",
+            corporateTax: "20.6%",
+            vat: "25% (12%,6% сниженные)",
+            personalIncomeTax: "≈52% (муниц.+гос.)",
+            socialEmployer: "31.42%",
+            note: "Очень высокие социальные платежи, но обширная соцподдержка. НДС стандарт 25%"
         }
+    ];
 
-        // CIT график
-        const citCanvas = document.getElementById('citChart');
-        let citChart = null;
-        if (citCanvas) {
-            citChart = createBarChart(citCanvas.getContext('2d'), 'Налог на прибыль, %', citData, '#2c7da0');
+    // Рендер функций
+    let currentView = 'table'; // 'table' or 'cards'
+    let filterText = '';
+
+    const tbody = document.getElementById('taxTableBody');
+    const cardsContainer = document.getElementById('cardsView');
+    const searchInput = document.getElementById('searchInput');
+    const tableViewBtn = document.getElementById('tableViewBtn');
+    const cardsViewBtn = document.getElementById('cardsViewBtn');
+
+    function filterData() {
+        const term = filterText.trim().toLowerCase();
+        if (!term) return taxData;
+        return taxData.filter(country => country.name.toLowerCase().includes(term));
+    }
+
+    function renderTable() {
+        const filtered = filterData();
+        if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 2rem;">📭 Нет стран по вашему запросу</td></tr>`;
+            return;
         }
-        
-        // VAT график
-        const vatCanvas = document.getElementById('vatChart');
-        let vatChart = null;
-        if (vatCanvas) {
-            vatChart = createBarChart(vatCanvas.getContext('2d'), 'НДС / Аналог, %', vatData, '#e9a25c');
+        tbody.innerHTML = filtered.map(country => `
+            <tr>
+                <td class="country-name"><span class="country-flag">${country.flag}</span> ${country.name}</td>
+                <td><span class="tax-badge">${country.corporateTax}</span></td>
+                <td>${country.vat}</td>
+                <td>${country.personalIncomeTax}</td>
+                <td>${country.socialEmployer}</td>
+                <td><span class="tooltip-note" title="${country.note.replace(/"/g, '&quot;')}">📘 ${country.note.substring(0, 55)}${country.note.length > 55 ? '…' : ''}</span></td>
+            </tr>
+        `).join('');
+    }
+
+    function renderCards() {
+        const filtered = filterData();
+        if (filtered.length === 0) {
+            cardsContainer.innerHTML = `<div style="padding: 2rem; text-align: center; background: white; border-radius: 28px;">✨ Нет данных для отображения</div>`;
+            return;
         }
-        
-        // НДФЛ график
-        const pitCanvas = document.getElementById('pITChart');
-        let pitChart = null;
-        if (pitCanvas) {
-            pitChart = createBarChart(pitCanvas.getContext('2d'), 'Максимальная ставка НДФЛ, %', pitData, '#4f8a8b');
+        cardsContainer.innerHTML = filtered.map(country => `
+            <div class="tax-card">
+                <h3><span>${country.flag}</span> ${country.name}</h3>
+                <div class="card-row"><span class="card-label"><i class="fas fa-building"></i> Налог на прибыль</span><span class="card-value">${country.corporateTax}</span></div>
+                <div class="card-row"><span class="card-label"><i class="fas fa-receipt"></i> НДС / GST</span><span class="card-value">${country.vat}</span></div>
+                <div class="card-row"><span class="card-label"><i class="fas fa-user"></i> НДФЛ (макс.)</span><span class="card-value">${country.personalIncomeTax}</span></div>
+                <div class="card-row"><span class="card-label"><i class="fas fa-hand-holding-heart"></i> Соцвзносы (раб.)</span><span class="card-value">${country.socialEmployer}</span></div>
+                <hr>
+                <div class="card-row"><span class="card-label"><i class="fas fa-info-circle"></i> Детали</span><span class="card-value" style="font-weight: normal; font-size:0.8rem;">${country.note}</span></div>
+            </div>
+        `).join('');
+    }
+
+    function updateView() {
+        const tableViewEl = document.getElementById('tableView');
+        const cardsViewEl = document.getElementById('cardsView');
+        if (currentView === 'table') {
+            tableViewEl.style.display = 'block';
+            cardsViewEl.classList.remove('active');
+            renderTable();
+        } else {
+            tableViewEl.style.display = 'none';
+            cardsViewEl.classList.add('active');
+            renderCards();
         }
-        
-        // Соцвзносы график
-        const socialCanvas = document.getElementById('socialChart');
-        let socialChart = null;
-        if (socialCanvas) {
-            socialChart = createBarChart(socialCanvas.getContext('2d'), 'Социальные взносы (работодатель), %', socialData, '#6c5b7b');
+        // highlight кнопок
+        if (currentView === 'table') {
+            tableViewBtn.classList.add('active');
+            cardsViewBtn.classList.remove('active');
+        } else {
+            cardsViewBtn.classList.add('active');
+            tableViewBtn.classList.remove('active');
         }
-        
-        // При необходимости добавим легенду для дополнительных пояснений (для корректного отображения на мобильных)
-        // Дополнительно можно раскрасить строки в таблице (уже есть выделение России)
-        const tableRows = document.querySelectorAll('.comparison-table table tbody tr');
-        if(tableRows.length) {
-            for(let i=0;i<tableRows.length;i++) {
-                let row = tableRows[i];
-                let firstCell = row.querySelector('td:first-child');
-                if(firstCell && firstCell.innerText.includes('Россия')) {
-                    row.classList.add('highlight');
-                }
-            }
-        }
-        // небольшая динамическая подсказка при клике на статистические карточки
-        const statCards = document.querySelectorAll('.stat-card');
-        statCards.forEach(card => {
-            card.addEventListener('click', () => {
-                // просто эффект обратной связи, без сложной логики
-                card.style.transform = 'scale(0.98)';
-                setTimeout(() => { card.style.transform = ''; }, 150);
-            });
-        });
-        
-        // ручная правка для Германии и США в графике НДС: США используем средний налог с продаж
-        // для сохранения консистентности в таблице указано ~7,5% среднее, что корректно.
-        // дополнительно при загрузке возможно добавить сообщение о завершении
-        console.log('Графики загружены, сравнение налогов доступно');
-    })();
+    }
+
+    // События фильтрации и смены вида
+    searchInput.addEventListener('input', (e) => {
+        filterText = e.target.value;
+        if (currentView === 'table') renderTable();
+        else renderCards();
+    });
+
+    tableViewBtn.addEventListener('click', () => {
+        if (currentView === 'table') return;
+        currentView = 'table';
+        updateView();
+    });
+
+    cardsViewBtn.addEventListener('click', () => {
+        if (currentView === 'cards') return;
+        currentView = 'cards';
+        updateView();
+    });
+
+    // вспомогательная функция приведения view в порядок (при загрузке)
+    function init() {
+        currentView = 'table';
+        updateView();
+    }
+
+    init();
 </script>
-<!-- небольшая коррекция описания сингапура в таблице НДФЛ, согласно данным на графике -->
 </body>
 </html>
